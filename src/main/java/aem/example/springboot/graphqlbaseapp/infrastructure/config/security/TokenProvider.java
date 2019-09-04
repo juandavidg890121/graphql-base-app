@@ -86,12 +86,10 @@ public class TokenProvider {
     }
 
     public String generateToken(Authentication authentication) {
-        Set<String> roles = authentication.getAuthorities()
+
+        return generateToken(authentication.getName(), authentication.getAuthorities()
                 .stream()
                 .map(GrantedAuthority::getAuthority)
-                .map(String::toUpperCase)
-                .collect(Collectors.toSet());
-
-        return generateToken(authentication.getName(), roles.toArray(new String[0]));
+                .map(String::toUpperCase).distinct().toArray(String[]::new));
     }
 }
