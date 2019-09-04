@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: graphql-core
+  profiles:
+    active: dev
+server:
+  port: 9000
