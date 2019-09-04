@@ -1,0 +1,13 @@
+
+input Credentials{
+    username: String!
+    password: String!
+}
+
+type Payload{
+    accessToken: String!
+}
+
+extend type Mutation{
+    login(credentials: Credentials!): Payload
+}

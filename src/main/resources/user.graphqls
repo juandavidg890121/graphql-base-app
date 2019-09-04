@@ -1,0 +1,26 @@
+type User{
+    id: ID
+    username: String
+    email: String
+    firstName: String
+    lastName: String
+    activated: Boolean
+}
+
+extend type Mutation{
+    addUser(user: UserInput): User
+}
+
+input UserInput{
+    username: String
+    password: String
+    email: String
+    firstName: String
+    lastName: String
+    roles: [String]
+}
+
+extend type Query{
+    list: [User]
+    getUser(username: String!): User
+}
