@@ -36,4 +36,9 @@ public class UserResource implements GraphQLMutationResolver, GraphQLQueryResolv
     public User getUser(String username) {
         return userService.getUser(username);
     }
+
+    @PreAuthorize("hasRole(\"" + Constants.ROLE_ADMIN + "\")")
+    public User editUser(UserInput input) throws UsernameOrEmailInUseException {
+        return userService.updateUser(input);
+    }
 }

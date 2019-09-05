@@ -10,12 +10,15 @@ type User{
 extend type Mutation{
     # registre new user
     addUser(user: UserInput): User
+    editUser(user: UserInput): User
 }
 
 input UserInput{
+    id: ID
     username: String
     password: String
     email: Email
+    activated: Boolean
     firstName: String
     lastName: String
     roles: [String]
