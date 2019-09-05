@@ -1,26 +1,29 @@
 type User{
     id: ID
     username: String
-    email: String
+    email: Email
     firstName: String
     lastName: String
     activated: Boolean
 }
 
 extend type Mutation{
+    # registre new user
     addUser(user: UserInput): User
 }
 
 input UserInput{
     username: String
     password: String
-    email: String
+    email: Email
     firstName: String
     lastName: String
     roles: [String]
 }
 
 extend type Query{
+    #get all users
     list: [User]
+    #get single user by username
     getUser(username: String!): User
 }
