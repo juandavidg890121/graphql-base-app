@@ -4,6 +4,7 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.AuthorityRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
+import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,7 +28,11 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(UserInput input) {
+    public User createUser(UserInput input) throws UsernameOrEmailInUseException {
+        if (userRepository.findOneByEmailIgnoreCase(input.getEmail()).isPresent())
+            throw new UsernameOrEmailInUseException("email", input.getEmail());
+        if (userRepository.findOneByUsername(input.getUsername()).isPresent())
+            throw new UsernameOrEmailInUseException("username", input.getUsername());
         User user = new User();
         user.setUsername(input.getUsername());
         user.setPassword(passwordEncoder.encode(input.getPassword()));

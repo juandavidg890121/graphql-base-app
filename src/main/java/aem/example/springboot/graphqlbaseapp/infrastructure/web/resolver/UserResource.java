@@ -1,7 +1,9 @@
 package aem.example.springboot.graphqlbaseapp.infrastructure.web.resolver;
 
+import aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants;
 import aem.example.springboot.graphqlbaseapp.infrastructure.config.security.annotation.Public;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
+import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.service.UserService;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
@@ -20,17 +22,17 @@ public class UserResource implements GraphQLMutationResolver, GraphQLQueryResolv
         this.userService = userService;
     }
 
-    @PreAuthorize("hasRole(\"ROLE_ADMIN\")")
-    public User addUser(UserInput input) {
+    @Public
+    public User addUser(UserInput input) throws UsernameOrEmailInUseException {
         return userService.createUser(input);
     }
 
-    @PreAuthorize("hasRole(\"ROLE_ADMIN\")")
+    @PreAuthorize("hasRole(\"" + Constants.ROLE_ADMIN + "\")")
     public List<User> list() {
         return userService.findAll();
     }
 
-    @Public
+    @PreAuthorize("hasRole(\"" + Constants.ROLE_ADMIN + "\")")
     public User getUser(String username) {
         return userService.getUser(username);
     }
