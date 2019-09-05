@@ -2,6 +2,7 @@ package aem.example.springboot.graphqlbaseapp.infrastructure.config.security;
 
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
+import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UserNotActivatedException;
 import org.hibernate.validator.internal.constraintvalidators.bv.EmailValidator;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
