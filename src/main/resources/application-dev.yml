@@ -20,4 +20,6 @@ spring:
       hibernate.generate_statistics: false
       hibernate.jdbc.lob.non_contextual_creation: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
+  liquibase:
+    change-log: classpath:db/liquibase-changelog.xml
