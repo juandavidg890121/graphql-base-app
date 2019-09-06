@@ -7,6 +7,8 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserR
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -25,13 +27,15 @@ public class UserService {
     private final AuthorityRepository authorityRepository;
     private final PasswordEncoder passwordEncoder;
     private final CacheManager cacheManager;
+    private final MessageSource messageSource;
 
     public UserService(UserRepository userRepository, AuthorityRepository authorityRepository,
-                       PasswordEncoder passwordEncoder, CacheManager cacheManager) {
+                       PasswordEncoder passwordEncoder, CacheManager cacheManager, MessageSource messageSource) {
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.passwordEncoder = passwordEncoder;
         this.cacheManager = cacheManager;
+        this.messageSource = messageSource;
     }
 
     public User createUser(UserInput input) throws UsernameOrEmailInUseException {
@@ -64,7 +68,7 @@ public class UserService {
 
     public User updateUser(UserInput input) throws UsernameOrEmailInUseException {
         if (input.getId() == null)
-            throw new EntityNotFoundException("The user no exists");
+            throw new EntityNotFoundException(messageSource.getMessage("user.no_exists", null, LocaleContextHolder.getLocale()));
         Optional<User> user = userRepository.findOneWithAuthoritiesByEmailIgnoreCase(input.getEmail());
         if (user.isPresent() && (!user.get().getId().equals(input.getId())))
             throw new UsernameOrEmailInUseException("email", input.getEmail());
@@ -97,7 +101,7 @@ public class UserService {
                     this.clearUserCaches(user1);
                     return user1;
                 })
-                .orElseThrow(() -> new EntityNotFoundException("The user no exists"));
+                .orElseThrow(() -> new EntityNotFoundException(messageSource.getMessage("user.no_exists", null, LocaleContextHolder.getLocale())));
         return userRepository.save(userExists);
     }
 
