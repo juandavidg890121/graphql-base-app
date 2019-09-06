@@ -1,0 +1,11 @@
+type Authority{
+    name: ID!
+}
+
+extend type Query{
+    authorities: [Authority]
+}
+
+extend type Mutation{
+    addAuthority(name: String!): Authority!
+}
