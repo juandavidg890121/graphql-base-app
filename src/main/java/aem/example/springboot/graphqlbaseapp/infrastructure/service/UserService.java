@@ -7,6 +7,7 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserR
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -105,5 +106,14 @@ public class UserService {
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE)).evict(user.getUsername());
         if (user.getEmail() != null)
             Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
+    }
+
+    public boolean deleteUser(Long id) {
+        try {
+            userRepository.deleteById(id);
+            return true;
+        } catch (EmptyResultDataAccessException e) {
+            return true;
+        }
     }
 }

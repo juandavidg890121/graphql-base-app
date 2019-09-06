@@ -8,9 +8,10 @@ type User{
 }
 
 extend type Mutation{
-    # registre new user
+    # register new user
     addUser(user: UserInput): User
     editUser(user: UserInput): User
+    deleteUser(id: ID!): Boolean
 }
 
 input UserInput{
