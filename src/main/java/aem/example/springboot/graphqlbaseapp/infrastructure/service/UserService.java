@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_EMAIL_CACHE;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
+
 @Service
 public class UserService {
 
@@ -69,9 +72,9 @@ public class UserService {
 
     private void clearUserCaches(User user) {
         if (user.getUsername() != null)
-            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_LOGIN_CACHE)).evict(user.getUsername());
+            Objects.requireNonNull(cacheManager.getCache(USERS_BY_LOGIN_CACHE)).evict(user.getUsername());
         if (user.getEmail() != null)
-            Objects.requireNonNull(cacheManager.getCache(UserRepository.USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
+            Objects.requireNonNull(cacheManager.getCache(USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
     }
 
     public boolean deleteUser(Long id) {

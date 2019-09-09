@@ -16,6 +16,9 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_EMAIL_CACHE;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
+
 @Configuration
 @EnableCaching
 public class CacheConfig {
@@ -38,8 +41,8 @@ public class CacheConfig {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
-            createCache(cm, UserRepository.USERS_BY_LOGIN_CACHE);
-            createCache(cm, UserRepository.USERS_BY_EMAIL_CACHE);
+            createCache(cm, USERS_BY_LOGIN_CACHE);
+            createCache(cm, USERS_BY_EMAIL_CACHE);
             createCache(cm, User.class.getName());
             createCache(cm, Authority.class.getName());
             createCache(cm, User.class.getName() + ".authorities");
