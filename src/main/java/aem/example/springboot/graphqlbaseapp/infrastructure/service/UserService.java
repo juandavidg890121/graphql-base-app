@@ -8,7 +8,6 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
@@ -76,11 +75,7 @@ public class UserService {
     }
 
     public boolean deleteUser(Long id) {
-        try {
-            userRepository.deleteById(id);
-            return true;
-        } catch (EmptyResultDataAccessException e) {
-            return true;
-        }
+        userRepository.deleteById(id);
+        return true;
     }
 }

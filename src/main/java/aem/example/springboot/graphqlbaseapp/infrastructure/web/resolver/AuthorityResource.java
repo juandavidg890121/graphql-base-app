@@ -14,6 +14,7 @@ import javax.persistence.EntityExistsException;
 import java.util.List;
 
 @Component
+@SuppressWarnings({"unused"})
 public class AuthorityResource implements GraphQLQueryResolver, GraphQLMutationResolver {
     private final AuthorityRepository authorityRepository;
     private final MessageSource messageSource;

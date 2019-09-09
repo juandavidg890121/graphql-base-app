@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings({"unused"})
 public class AuthResolver implements GraphQLMutationResolver {
 
     private final TokenProvider tokenProvider;

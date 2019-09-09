@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@SuppressWarnings({"unused"})
 public class UserResource implements GraphQLMutationResolver, GraphQLQueryResolver {
 
     private final UserService userService;

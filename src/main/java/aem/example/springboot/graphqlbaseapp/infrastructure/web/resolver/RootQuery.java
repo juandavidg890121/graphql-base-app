@@ -5,6 +5,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
+@SuppressWarnings({"unused"})
 public class RootQuery implements GraphQLQueryResolver {
 
     @PreAuthorize("hasRole(\"ROLE_USER\")")

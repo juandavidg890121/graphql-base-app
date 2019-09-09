@@ -8,11 +8,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_EMAIL_CACHE;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
+
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    String USERS_BY_LOGIN_CACHE = "usersByLogin";
 
-    String USERS_BY_EMAIL_CACHE = "usersByEmail";
 
     Optional<User> findOneByEmailIgnoreCase(String email);
 

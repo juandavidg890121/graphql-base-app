@@ -14,9 +14,6 @@ public class UserInput {
     private boolean activated = false;
     private Set<String> roles = new HashSet<>();
 
-    public UserInput() {
-    }
-
     public Long getId() {
         return id;
     }
