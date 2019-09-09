@@ -1,41 +1,34 @@
 package aem.example.springboot.graphqlbaseapp.infrastructure.service;
 
-import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
-import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.AuthorityRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
+import aem.example.springboot.graphqlbaseapp.infrastructure.service.mapper.UserMapper;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
-    private final AuthorityRepository authorityRepository;
-    private final PasswordEncoder passwordEncoder;
     private final CacheManager cacheManager;
     private final MessageSource messageSource;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, AuthorityRepository authorityRepository,
-                       PasswordEncoder passwordEncoder, CacheManager cacheManager, MessageSource messageSource) {
+    public UserService(UserRepository userRepository, CacheManager cacheManager, MessageSource messageSource, UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.authorityRepository = authorityRepository;
-        this.passwordEncoder = passwordEncoder;
         this.cacheManager = cacheManager;
         this.messageSource = messageSource;
+        this.userMapper = userMapper;
     }
 
     public User createUser(UserInput input) throws UsernameOrEmailInUseException {
@@ -43,18 +36,7 @@ public class UserService {
             throw new UsernameOrEmailInUseException("email", input.getEmail());
         if (userRepository.findOneByUsername(input.getUsername()).isPresent())
             throw new UsernameOrEmailInUseException("username", input.getUsername());
-        User user = new User();
-        user.setUsername(input.getUsername());
-        user.setPassword(passwordEncoder.encode(input.getPassword()));
-        user.setEmail(input.getEmail());
-        user.setFirstName(input.getFirstName());
-        user.setLastName(input.getLastName());
-        Set<Authority> authorities = input.getRoles().stream()
-                .map(authorityRepository::findById)
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toSet());
-        user.setAuthorities(authorities);
+        User user = userMapper.toEntity(input);
         return userRepository.save(user);
     }
 
@@ -78,26 +60,7 @@ public class UserService {
         User userExists = userRepository.findById(input.getId())
                 .map(user1 -> {
                     this.clearUserCaches(user1);
-                    user1.setActivated(input.isActivated());
-                    if (input.getEmail() != null)
-                        user1.setEmail(input.getEmail());
-                    if (input.getFirstName() != null)
-                        user1.setFirstName(input.getFirstName());
-                    if (input.getLastName() != null)
-                        user1.setLastName(input.getLastName());
-                    if (input.getUsername() != null)
-                        user1.setUsername(input.getUsername());
-                    if (input.getPassword() != null)
-                        user1.setPassword(passwordEncoder.encode(input.getPassword()));
-                    if (input.getRoles() != null && !input.getRoles().isEmpty()) {
-                        Set<Authority> authorities = input.getRoles().stream()
-                                .distinct()
-                                .map(authorityRepository::findById)
-                                .filter(Optional::isPresent)
-                                .map(Optional::get)
-                                .collect(Collectors.toSet());
-                        user1.setAuthorities(authorities);
-                    }
+                    user1 = userMapper.toEntity(input);
                     this.clearUserCaches(user1);
                     return user1;
                 })
