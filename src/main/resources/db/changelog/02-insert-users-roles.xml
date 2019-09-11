@@ -1,0 +1,27 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet id="02" author="allens">
+        <comment>Inserting roles</comment>
+        <loadData
+                file="db/data/app_authority_201909091329.csv"
+                separator=";"
+                tableName="app_authority">
+        </loadData>
+
+        <loadData
+                file="db/data/app_user_201909091323.csv"
+                separator=";"
+                tableName="app_user">
+            <column name="id" type="numeric"/>
+            <column name="activated" type="boolean" defaultValueBoolean="false"/>
+            <column name="created_date" type="timestamp" defaultValue="now"/>
+        </loadData>
+        <loadData
+                file="db/data/app_user_authority_201909091332.csv"
+                separator=";"
+                tableName="app_user_authority">
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

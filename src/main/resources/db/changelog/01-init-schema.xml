@@ -1,0 +1,60 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.6.xsd">
+    <changeSet author="allens (generated)" id="1567794692327-1">
+        <createTable tableName="app_authority">
+            <column name="name" type="VARCHAR(50)">
+                <constraints primaryKey="true" primaryKeyName="app_authority_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-2">
+        <createTable tableName="app_user">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true" primaryKeyName="app_user_pkey"/>
+            </column>
+            <column name="activated" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="TIMESTAMP WITHOUT TIME ZONE"/>
+            <column name="email" type="VARCHAR(254)"/>
+            <column name="first_name" type="VARCHAR(50)"/>
+            <column name="last_name" type="VARCHAR(50)"/>
+            <column name="password_hash" type="VARCHAR(60)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="username" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-3">
+        <createTable tableName="app_user_authority">
+            <column name="user_id" type="BIGINT">
+                <constraints primaryKey="true" primaryKeyName="app_user_authority_pkey"/>
+            </column>
+            <column name="authority_name" type="VARCHAR(50)">
+                <constraints primaryKey="true" primaryKeyName="app_user_authority_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-4">
+        <addUniqueConstraint columnNames="email" constraintName="uk_1j9d9a06i600gd43uu3km82jw" tableName="app_user"/>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-5">
+        <addUniqueConstraint columnNames="username" constraintName="uk_3k4cplvh82srueuttfkwnylq0" tableName="app_user"/>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-6">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="app_user_authority"
+                                 constraintName="fkfocpjrj1tmhlu9vcfo47nqanp" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="app_user" validate="true"/>
+    </changeSet>
+    <changeSet author="allens (generated)" id="1567794692327-7">
+        <addForeignKeyConstraint baseColumnNames="authority_name" baseTableName="app_user_authority"
+                                 constraintName="fki2mlqu6q3ct0fy19j1c83sym3" deferrable="false"
+                                 initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION"
+                                 referencedColumnNames="name" referencedTableName="app_authority" validate="true"/>
+    </changeSet>
+</databaseChangeLog>
