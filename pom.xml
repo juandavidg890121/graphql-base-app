@@ -26,10 +26,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
-        <!--<dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jdbc</artifactId>
@@ -148,7 +144,17 @@
                 <artifactId>liquibase-maven-plugin</artifactId>
                 <version>3.6.3</version>
                 <configuration>
-                    <propertyFile>src/main/resources/liquibase.properties</propertyFile>
+                    <!--<propertyFile>src/main/resources/liquibase.properties</propertyFile>-->
+                    <changeLogFile>${project.basedir}/src/main/resources/db/liquibase-changelog.xml</changeLogFile>
+                    <diffChangeLogFile>${project.basedir}/src/main/resources/db/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
+                    <driver></driver>
+                    <url></url>
+                    <defaultSchemaName></defaultSchemaName>
+                    <username>gatewayApp</username>
+                    <password></password>
+                    <verbose>true</verbose>
+                    <logging>debug</logging>
+                    <contexts>!test</contexts>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -173,6 +179,10 @@
                     <artifactId>graphiql-spring-boot-starter</artifactId>
                     <version>5.10.0</version>
                     <scope>runtime</scope>
+                </dependency>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
                 </dependency>
             </dependencies>
             <properties>
