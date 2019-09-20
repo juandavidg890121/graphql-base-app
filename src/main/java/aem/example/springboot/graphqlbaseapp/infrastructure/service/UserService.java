@@ -1,19 +1,21 @@
 package aem.example.springboot.graphqlbaseapp.infrastructure.service;
 
+import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
+import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.AuthorityRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.service.mapper.UserMapper;
+import aem.example.springboot.graphqlbaseapp.infrastructure.service.util.RandomUtil;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_EMAIL_CACHE;
 import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
@@ -25,12 +27,17 @@ public class UserService {
     private final CacheManager cacheManager;
     private final MessageSource messageSource;
     private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthorityRepository authorityRepository;
 
-    public UserService(UserRepository userRepository, CacheManager cacheManager, MessageSource messageSource, UserMapper userMapper) {
+    public UserService(UserRepository userRepository, CacheManager cacheManager, MessageSource messageSource,
+                       UserMapper userMapper, PasswordEncoder passwordEncoder, AuthorityRepository authorityRepository) {
         this.userRepository = userRepository;
         this.cacheManager = cacheManager;
         this.messageSource = messageSource;
         this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.authorityRepository = authorityRepository;
     }
 
     public User createUser(UserInput input) throws UsernameOrEmailInUseException {
@@ -39,6 +46,12 @@ public class UserService {
         if (userRepository.findOneByUsername(input.getUsername()).isPresent())
             throw new UsernameOrEmailInUseException("username", input.getUsername());
         User user = userMapper.toEntity(input);
+        Set<Authority> authorities = new HashSet<>(authorityRepository.findAllById(input.getRoles()));
+        user.setAuthorities(authorities);
+        String encryptedPassword = passwordEncoder.encode(RandomUtil.generatePassword());
+        user.setPassword(encryptedPassword);
+        user.setRegisterKey(RandomUtil.generateActivationKey());
+        // todo implement send email to user
         return userRepository.save(user);
     }
 
