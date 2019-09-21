@@ -4,15 +4,18 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.AuthorityRepository;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
+import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UserNotActivatedException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.service.mapper.UserMapper;
 import aem.example.springboot.graphqlbaseapp.infrastructure.service.util.RandomUtil;
+import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.ActivateUserInput;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
@@ -21,6 +24,7 @@ import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Consta
 import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
 
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -55,10 +59,12 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional(readOnly = true)
     public List<User> findAll() {
         return userRepository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public User getUser(String username) {
         return userRepository.findOneWithAuthoritiesByUsername(username).orElse(null);
     }
@@ -93,5 +99,19 @@ public class UserService {
     public boolean deleteUser(Long id) {
         userRepository.deleteById(id);
         return true;
+    }
+
+    public User activateUser(ActivateUserInput input) {
+        Optional<User> existingUser = userRepository.findOneWithAuthoritiesByUsernameAndRegisterKey(input.getUsername(), input.getActivationKey());
+        return existingUser
+                .map(user -> {
+                    user.setPassword(passwordEncoder.encode(input.getPassword()));
+                    user.setRegisterKey(null);
+                    user.setActivated(true);
+                    userRepository.save(user);
+                    this.clearUserCaches(user);
+                    return user;
+                })
+                .orElseThrow(() -> new UserNotActivatedException(String.format("User %s has not been activated", input.getUsername())));
     }
 }

@@ -29,4 +29,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @EntityGraph(attributePaths = "authorities")
     @Cacheable(cacheNames = USERS_BY_EMAIL_CACHE)
     Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email);
+
+    @EntityGraph(attributePaths = "authorities", type = EntityGraph.EntityGraphType.LOAD)
+    Optional<User> findOneWithAuthoritiesByUsernameAndRegisterKey(String username, String registerKey);
 }

@@ -10,9 +10,11 @@ type User{
 
 extend type Mutation{
     # register new user
-    addUser(user: UserInput): User
-    editUser(user: UserInput): User
+    addUser(user: UserInput!): User
+    editUser(user: UserInput!): User
     deleteUser(id: ID!): Boolean
+    # Activate a user. Must define the user password
+    activateUser(credentials: ActivateUserInput!): User
 }
 
 input UserInput{
@@ -22,6 +24,12 @@ input UserInput{
     firstName: String
     lastName: String
     roles: [String]
+}
+
+input ActivateUserInput{
+    username: String!
+    password: String!
+    activationKey: String!
 }
 
 extend type Query{
