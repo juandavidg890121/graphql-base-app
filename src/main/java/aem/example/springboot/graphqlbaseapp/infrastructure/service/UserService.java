@@ -20,8 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
-import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_EMAIL_CACHE;
-import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.USERS_BY_LOGIN_CACHE;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.*;
 
 @Service
 @Transactional
@@ -94,6 +93,7 @@ public class UserService {
             Objects.requireNonNull(cacheManager.getCache(USERS_BY_LOGIN_CACHE)).evict(user.getUsername());
         if (user.getEmail() != null)
             Objects.requireNonNull(cacheManager.getCache(USERS_BY_EMAIL_CACHE)).evict(user.getEmail());
+        Objects.requireNonNull(cacheManager.getCache(ALL_USERS_WITH_AUTHORITIES_CACHE)).clear();
     }
 
     public boolean deleteUser(Long id) {
