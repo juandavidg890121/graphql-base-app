@@ -2,6 +2,9 @@ package aem.example.springboot.graphqlbaseapp.infrastructure.config;
 
 import aem.example.springboot.graphqlbaseapp.infrastructure.config.security.JWTConfigurer;
 import aem.example.springboot.graphqlbaseapp.infrastructure.config.security.TokenProvider;
+import aem.example.springboot.graphqlbaseapp.infrastructure.service.security.InMemoryTokenStore;
+import aem.example.springboot.graphqlbaseapp.infrastructure.service.security.TokenStore;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
@@ -81,6 +84,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     private SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> securityConfigurerAdapter() {
-        return new JWTConfigurer(tokenProvider);
+        return new JWTConfigurer(tokenProvider, tokenStore());
     }
+    
+    @Bean
+    public TokenStore tokenStore() {
+		return new InMemoryTokenStore();
+	}
 }

@@ -78,7 +78,7 @@ public class TokenProvider {
 
     public Authentication getAuthentication(String token) {
         DecodedJWT decode = JWT.decode(token);
-        String username = decode.getSignature();
+        String username = decode.getSubject();
         String[] roles = decode.getClaim(AUTHORITIES_KEY).asArray(String.class);
         Set<SimpleGrantedAuthority> authorities = Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toSet());
         User principal = new User(username, "", authorities);
@@ -91,5 +91,9 @@ public class TokenProvider {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .map(String::toUpperCase).distinct().toArray(String[]::new));
+    }
+    
+    public String getSubject(String token){
+    	return JWT.decode(token).getSubject();
     }
 }

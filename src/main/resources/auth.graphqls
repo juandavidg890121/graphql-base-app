@@ -6,8 +6,10 @@ input Credentials{
 
 type Payload{
     accessToken: String!
+    refreshToken: String!
 }
 
 extend type Mutation{
     login(credentials: Credentials!): Payload
+    refreshToken(token: String!): Payload
 }
