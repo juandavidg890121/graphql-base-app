@@ -2,7 +2,6 @@ package aem.example.springboot.graphqlbaseapp.infrastructure.config;
 
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
-import aem.example.springboot.graphqlbaseapp.infrastructure.dba.repository.UserRepository;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
@@ -16,7 +15,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.time.Duration;
 
-;import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.*;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.*;
 
 @Configuration
 @EnableCaching

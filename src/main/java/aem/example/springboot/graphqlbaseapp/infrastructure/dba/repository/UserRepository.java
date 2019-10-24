@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-;import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.*;
+import static aem.example.springboot.graphqlbaseapp.infrastructure.config.Constants.*;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -32,9 +32,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findOneWithAuthoritiesByEmailIgnoreCase(String email);
 
     @EntityGraph(attributePaths = "authorities", type = EntityGraph.EntityGraphType.LOAD)
+    @Cacheable(value = USERS_BY_LOGIN_CACHE, key = "#username")
     Optional<User> findOneWithAuthoritiesByUsernameAndRegisterKey(String username, String registerKey);
     
     @EntityGraph(attributePaths = "authorities", type = EntityGraph.EntityGraphType.LOAD)
-    @Cacheable(cacheNames = ALL_USERS_WITH_AUTHORITIES_CACHE)
     List<User> findAll();
 }

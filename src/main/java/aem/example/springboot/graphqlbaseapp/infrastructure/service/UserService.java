@@ -11,6 +11,10 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.service.util.RandomU
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.ActivateUserInput;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +47,10 @@ public class UserService {
         this.authorityRepository = authorityRepository;
     }
 
+    @Caching(put = {
+            @CachePut(value = USERS_BY_LOGIN_CACHE, key = "#input.username"),
+            @CachePut(value = USERS_BY_EMAIL_CACHE, key = "#input.email")
+    })
     public User createUser(UserInput input) throws UsernameOrEmailInUseException {
         if (userRepository.findOneByEmailIgnoreCase(input.getEmail()).isPresent())
             throw new UsernameOrEmailInUseException("email", input.getEmail());
@@ -59,6 +67,7 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = ALL_USERS_WITH_AUTHORITIES_CACHE)
     public List<User> findAll() {
         return userRepository.findAll();
     }
@@ -68,6 +77,11 @@ public class UserService {
         return userRepository.findOneWithAuthoritiesByUsername(username).orElse(null);
     }
 
+    @Caching(evict = {
+            @CacheEvict(value = USERS_BY_LOGIN_CACHE, key = "#input.username"),
+            @CacheEvict(value = USERS_BY_EMAIL_CACHE, key = "#input.email"),
+            @CacheEvict(value = ALL_USERS_WITH_AUTHORITIES_CACHE, allEntries = true)
+    })
     public User updateUser(UserInput input) throws UsernameOrEmailInUseException {
         if (input.getId() == null)
             throw new EntityNotFoundException(messageSource.getMessage("user.no_exists", null, LocaleContextHolder.getLocale()));
@@ -78,12 +92,7 @@ public class UserService {
         if (user.isPresent() && !user.get().getId().equals(input.getId()))
             throw new UsernameOrEmailInUseException("username", input.getUsername());
         User userExists = userRepository.findById(input.getId())
-                .map(user1 -> {
-                    this.clearUserCaches(user1);
-                    user1 = userMapper.toEntity(input);
-                    this.clearUserCaches(user1);
-                    return user1;
-                })
+                .map(user1 -> userMapper.toEntity(input))
                 .orElseThrow(() -> new EntityNotFoundException(messageSource.getMessage("user.no_exists", null, LocaleContextHolder.getLocale())));
         return userRepository.save(userExists);
     }
@@ -97,7 +106,10 @@ public class UserService {
     }
 
     public boolean deleteUser(Long id) {
-        userRepository.deleteById(id);
+        userRepository.findById(id).ifPresent(user -> {
+            userRepository.delete(user);
+            this.clearUserCaches(user);
+        });
         return true;
     }
 
