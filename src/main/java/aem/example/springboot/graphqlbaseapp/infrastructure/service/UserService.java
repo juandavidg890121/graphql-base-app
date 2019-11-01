@@ -124,6 +124,6 @@ public class UserService {
                     this.clearUserCaches(user);
                     return user;
                 })
-                .orElseThrow(() -> new UserNotActivatedException(String.format("User %s has not been activated", input.getUsername())));
+                .orElseThrow(() -> new UserNotActivatedException(messageSource.getMessage("user.no_activated", new String[]{input.getUsername()}, LocaleContextHolder.getLocale())));
     }
 }
