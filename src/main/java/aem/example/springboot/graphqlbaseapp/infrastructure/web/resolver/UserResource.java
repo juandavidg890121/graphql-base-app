@@ -5,6 +5,7 @@ import aem.example.springboot.graphqlbaseapp.infrastructure.config.security.anno
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
 import aem.example.springboot.graphqlbaseapp.infrastructure.exception.UsernameOrEmailInUseException;
 import aem.example.springboot.graphqlbaseapp.infrastructure.service.UserService;
+import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.ActivateUserInput;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
 import com.coxautodev.graphql.tools.GraphQLMutationResolver;
 import com.coxautodev.graphql.tools.GraphQLQueryResolver;
@@ -46,5 +47,10 @@ public class UserResource implements GraphQLMutationResolver, GraphQLQueryResolv
     @PreAuthorize("hasRole(\"" + Constants.ROLE_ADMIN + "\")")
     public boolean deleteUser(Long id) {
         return userService.deleteUser(id);
+    }
+
+    @Public
+    public User activateUser(ActivateUserInput input) {
+        return userService.activateUser(input);
     }
 }

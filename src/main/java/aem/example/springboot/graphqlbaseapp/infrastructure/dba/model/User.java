@@ -62,6 +62,10 @@ public class User implements Serializable {
     @JsonIgnore
     private Instant createdDate = Instant.now();
 
+    @Column(name = "register_key")
+    @JsonIgnore
+    private String registerKey;
+
     @JsonIgnore
     @ManyToMany
     @JoinTable(
@@ -154,5 +158,13 @@ public class User implements Serializable {
     public User setAuthorities(Set<Authority> authorities) {
         this.authorities = authorities;
         return this;
+    }
+
+    public String getRegisterKey() {
+        return registerKey;
+    }
+
+    public void setRegisterKey(String registerKey) {
+        this.registerKey = registerKey;
     }
 }

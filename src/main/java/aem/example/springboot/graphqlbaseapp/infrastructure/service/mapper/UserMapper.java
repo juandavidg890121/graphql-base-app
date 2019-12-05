@@ -3,7 +3,6 @@ package aem.example.springboot.graphqlbaseapp.infrastructure.service.mapper;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.Authority;
 import aem.example.springboot.graphqlbaseapp.infrastructure.dba.model.User;
 import aem.example.springboot.graphqlbaseapp.infrastructure.web.dto.UserInput;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,16 +11,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserMapper implements EntityMapper<UserInput, User> {
-    private final PasswordEncoder passwordEncoder;
 
-    public UserMapper(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public UserMapper() {
     }
 
     @Override
     public User toEntity(UserInput input) {
         User user1 = new User();
-        user1.setActivated(input.isActivated());
         if (input.getEmail() != null)
             user1.setEmail(input.getEmail());
         if (input.getFirstName() != null)
@@ -30,8 +26,6 @@ public class UserMapper implements EntityMapper<UserInput, User> {
             user1.setLastName(input.getLastName());
         if (input.getUsername() != null)
             user1.setUsername(input.getUsername());
-        if (input.getPassword() != null)
-            user1.setPassword(passwordEncoder.encode(input.getPassword()));
         if (input.getRoles() != null && !input.getRoles().isEmpty()) {
             Set<Authority> authorities = input.getRoles().stream()
                     .distinct()
@@ -39,13 +33,12 @@ public class UserMapper implements EntityMapper<UserInput, User> {
                     .collect(Collectors.toSet());
             user1.setAuthorities(authorities);
         }
-        return null;
+        return user1;
     }
 
     @Override
     public UserInput toDto(User entity) {
         UserInput userInput = new UserInput();
-        userInput.setActivated(entity.isActivated());
         userInput.setEmail(entity.getEmail());
         userInput.setFirstName(entity.getFirstName());
         userInput.setLastName(entity.getLastName());
